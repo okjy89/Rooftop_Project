@@ -4,7 +4,7 @@ This project contains code for generating adaptive kernels based on input images
 
 ### Main Script
 
-- **Adapative_Kernel_Generator.py**  
+- 'Adapative_Kernel_Generator.py'  
 
 #### Supporting Files
 
