@@ -20,19 +20,9 @@ def roi_feature_map(img):
     def hook_fn(module, input, output):
         feature_maps.append(output)
     # 모델의 feature map을 추출하기 위한 hook 설정
-        # model.model.model[0] ~ [4]: Backbone
-        # model.model.model[5] ~ [10]: Neck
-        # model.model.model[11]: Detect Head
-        # model[0] : (1, 32, 160, 160)
-    #print(model)  
-    # print(type(model))          
-    # print(type(model.model))
-    # print(type(model.model.model))
-    # print(dir(model.model))
-    # print(dir(model.model.model))
-    # print(list(model.model.children()))
-    
-    model.model.model[0].register_forward_hook(hook_fn)
+        # model.model.model[0] ~ [9] : cnn
+        # model.model.model[10] ~ : fcn
+    model.model.model.model[1].register_forward_hook(hook_fn)
 
     # 추론
     with torch.no_grad():
@@ -78,6 +68,7 @@ def roi_feature_map(img):
 
         # RoI에 해당하는 feature map만 crop
         roi_feat_map = feat_map[0, :, fy1:fy2, fx1:fx2]  # (C, h, w)
+        roi_feat_map = roi_feat_map.unsqueeze(0) # (B, C, h, w)
         print("RoI feature map shape:", roi_feat_map.shape)
 
         return roi_feat_map
