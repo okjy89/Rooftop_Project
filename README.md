@@ -10,7 +10,7 @@ This project contains code for generating adaptive kernels based on input images
 
 - **example_image**: `download.jpeg`  
 
-- **Feature Map Extractor**: `get_roi_featuremap.py`  
+- **Get roi and featuremap**: `get_roi_featuremap.py`  
 
 - **MLP Network**: `MlpNetwork.py`  
 

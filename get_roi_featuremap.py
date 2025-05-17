@@ -20,8 +20,8 @@ def roi_feature_map(img):
     def hook_fn(module, input, output):
         feature_maps.append(output)
     # 모델의 feature map을 추출하기 위한 hook 설정
-        # model.model.model[0] ~ [9] : cnn
-        # model.model.model[10] ~ : fcn
+        # model.model.model.model[0] ~ [9] : cnn
+        # model.model.model.model[10] ~ : fcn
     model.model.model.model[1].register_forward_hook(hook_fn)
 
     # 추론
@@ -71,7 +71,10 @@ def roi_feature_map(img):
         roi_feat_map = roi_feat_map.unsqueeze(0) # (B, C, h, w)
         print("RoI feature map shape:", roi_feat_map.shape)
 
-        return roi_feat_map
+         # ROI 내부 영역 crop 후 저장
+        roi_img = img[large_roi[1]:large_roi[3], large_roi[0]:large_roi[2]]
+
+        return roi_feat_map, roi_img
     else:
         print("No RoI detected.")
         return None
