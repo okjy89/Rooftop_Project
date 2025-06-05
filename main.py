@@ -27,7 +27,7 @@ from Trainer_V4 import MLPTrainer
 # ────────────────────────────────────────────────────────────────────────
 
 # VOC2007 데이터셋 경로 (실제 경로로 바꿔주세요)
-VOC_ROOT = r"/home/okjy89/dataset/pascal/train/VOCdevkit\VOC2007"
+VOC_ROOT = r"/home/okjy89/dataset/pascal/train/VOCdevkit/VOC2007"
 
 # # cnn.yaml 파일 경로 (feature extractor 구조 정의)
 # MODEL_YAML = r"~/cnn.yaml"
