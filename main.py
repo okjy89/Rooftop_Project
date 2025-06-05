@@ -63,6 +63,8 @@ def main():
 
     # (b) parse_model 호출: ch=[3] → RGB 입력
     backbone = parse_model(yaml_dict, ch=[3])
+    state_dict = torch.load('backbone_yolov5x.pt', map_location='cpu')
+    backbone.load_state_dict(state_dict, strict=False)
     backbone.eval()
 
     # (c) 더미 텐서를 흘려서 feature 채널 수 추론
