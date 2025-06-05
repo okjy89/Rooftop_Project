@@ -27,7 +27,7 @@ from Trainer_V4 import MLPTrainer
 # ────────────────────────────────────────────────────────────────────────
 
 # VOC2007 데이터셋 경로 (실제 경로로 바꿔주세요)
-VOC_ROOT = r"/home/okjy89/dataset/pascal/train/VOCdevkit\VOC2007"
+VOC_ROOT = r"/home/okjy89/dataset/pascal/train/VOCdevkit/VOC2007"
 
 # # cnn.yaml 파일 경로 (feature extractor 구조 정의)
 # MODEL_YAML = r"~/cnn.yaml"
@@ -63,6 +63,8 @@ def main():
 
     # (b) parse_model 호출: ch=[3] → RGB 입력
     backbone = parse_model(yaml_dict, ch=[3])
+    state_dict = torch.load('backbone_yolov5x.pt', map_location='cpu')
+    backbone.load_state_dict(state_dict, strict=False)
     backbone.eval()
 
     # (c) 더미 텐서를 흘려서 feature 채널 수 추론
