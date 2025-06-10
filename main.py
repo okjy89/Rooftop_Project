@@ -27,15 +27,13 @@ from Trainer_V4 import MLPTrainer
 # ────────────────────────────────────────────────────────────────────────
 
 # VOC2007 데이터셋 경로 (실제 경로로 바꿔주세요)
-VOC_ROOT = r"/home/okjy89/dataset/pascal/train/VOCdevkit/VOC2007"
+VOC_ROOT = r"C:\Users\DELL\Desktop\VOCdevkit\VOC2007"
 
-# # cnn.yaml 파일 경로 (feature extractor 구조 정의)
-# MODEL_YAML = r"~/cnn.yaml"
-MODEL_YAML = os.path.join(os.getcwd(), "cnn.yaml")
-YOLO_WEIGHTS = os.path.join(os.getcwd(), "best.pt")
+# cnn.yaml 파일 경로 (feature extractor 구조 정의)
+MODEL_YAML = r"C:\Users\DELL\Desktop\Project_Ver1\cnn.yaml"
 
 # Ultralytics YOLOv8 pretrained weight 파일 경로(.pt)
-# YOLO_WEIGHTS = r"~/best.pt"
+YOLO_WEIGHTS = r"C:\Users\DELL\Desktop\Yolov8\yolov8-pytorch\runs\train\exp11\weights\best.pt"
 
 # 이미지 리사이즈 크기 (Height, Width)
 INPUT_SIZE = (640, 640)
@@ -45,8 +43,8 @@ BATCH_SIZE = 16
 NUM_WORKERS = 4
 
 # 학습 관련 설정
-LR = 1e-3
-EPOCHS = 20
+LR = 1e-2
+EPOCHS = 50
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -63,9 +61,7 @@ def main():
 
     # (b) parse_model 호출: ch=[3] → RGB 입력
     backbone = parse_model(yaml_dict, ch=[3])
-    state_dict = torch.load('backbone_yolov5x.pt', map_location='cpu')
-    backbone.load_state_dict(state_dict, strict=False)
-    backbone.eval()
+    backbone.train()
 
     # (c) 더미 텐서를 흘려서 feature 채널 수 추론
     with torch.no_grad():

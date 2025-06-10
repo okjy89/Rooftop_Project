@@ -44,8 +44,7 @@ def compute_average_confidence(
         if not os.path.isfile(img_path):
             print(f"[경고] ({idx+1}/{len(image_ids)}) 이미지 파일이 없음: {img_path}")
             continue
-        else:
-            print(f"[디버그] ({idx+1}/{len(image_ids)}) 이미지 파일 발견: {img_path}")
+
 
         # inference 시작
         try:
@@ -56,7 +55,7 @@ def compute_average_confidence(
 
         # 검출된 confidence 확인
         confidences = results[0].boxes.conf.cpu().numpy().tolist()
-        print(f"[디버그] ({idx+1}/{len(image_ids)}) 검출된 confidence 개수: {len(confidences)}")
+  
 
         if confidences:
             all_confidences.extend(confidences)
@@ -64,7 +63,7 @@ def compute_average_confidence(
     # 4) 평균 계산
     print(f"[디버그] 최종 누적된 confidence 개수: {len(all_confidences)}")
     if not all_confidences:
-        print("[경고] 검출된 바운딩박스가 하나도 없습니다. 모델/데이터셋을 확인하세요.")
+
         return 0.0
 
     all_confidences = np.array(all_confidences, dtype=np.float32)
@@ -82,7 +81,7 @@ if __name__ == "__main__":
     model_weights = r"C:\Users\DELL\Desktop\Yolov8\yolov8-pytorch\runs\train\exp11\weights\best.pt"
 
     # 2) VOC2007 최상위 경로 (ImageSets/Main/val.txt와 images/가 여기 아래 있어야 함)
-    voc_root_dir = r"home/okjy89/dataset/pascal/train/VOCdevkit/VOC2007"
+    voc_root_dir = r"C:\Users\DELL\Desktop\VOCdevkit\VOC2007"
 
     # 3) val.txt 파일 경로
     val_txt_path = os.path.join(voc_root_dir, "ImageSets", "Main", "val.txt")

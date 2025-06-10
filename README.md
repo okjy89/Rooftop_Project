@@ -10,4 +10,4 @@
 - Input image와 kernel을 conv
 
 ## Main code
-- main.py
+- mainV2.py

@@ -13,7 +13,7 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), "yolov5"))
 from pathlib import Path
-from utils.yolo_backbone import load_yolo_backbone  # 새로 만들었던 외부 함수
+from yolov5.utils.yolo_backbone import load_yolo_backbone  # 새로 만들었던 외부 함수
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -32,17 +32,17 @@ from Trainer_RGB_V1 import MLPTrainer
 # ────────────────────────────────────────────────────────────────────────
 
 # VOC2007 데이터셋 경로 (실제 경로로 바꿔주세요)
-VOC_ROOT = r"C:\Users\DELL\Desktop\VOCdevkit\VOC2007"
+VOC_ROOT = r"/home/okjy89/dataset/pascal/train/VOCdevkit/VOC2007"
 
 # cnn.yaml 파일 경로 (feature extractor 구조 정의)
-MODEL_YAML = r"C:\Users\DELL\Desktop\Project_Ver1\cnn.yaml"
+MODEL_YAML = r"cnn.yaml"
 
 # Ultralytics YOLOv8 pretrained weight 파일 경로(.pt)
 YOLO_WEIGHTS = r"C:\Users\DELL\Desktop\Yolov8\yolov8-pytorch\runs\train\exp11\weights\best.pt"
 
 # Backbone Yolo 가중치 경로; Feature Extractor
-YOLOV5_BACKBONE_WEIGHTS = r"C:\Users\DELL\Desktop\Project_Ver1\yolov5\runs\train\yolov5n_voc2\weights\best.pt"
-YOLOV5_CFG = r"C:\Users\DELL\Desktop\Project_Ver1\yolov5\models\yolov5n.yaml"
+YOLOV5_BACKBONE_WEIGHTS = r"yolov5/runs/train/yolov5n_voc2/weights/best.pt"
+YOLOV5_CFG = r"yolov5/models/yolov5n.yaml"
 
 # 이미지 리사이즈 크기 (Height, Width)
 INPUT_SIZE = (640, 640)

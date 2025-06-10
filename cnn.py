@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import math
-import warnings
 
 #Use def "parse_model" to get model from yaml file.
 
@@ -62,15 +61,7 @@ class Focus(nn.Module):
     
 
 class SPPF(nn.Module):
-    """Implements a fast Spatial Pyramid Pooling (SPPF) layer for efficient feature extraction in YOLOv5 models."""
-
-    def __init__(self, c1, c2, k=5):
-        """
-        Initializes YOLOv5 SPPF layer with given channels and kernel size for YOLOv5 model, combining convolution and
-        max pooling.
-
-        Equivalent to SPP(k=(5, 9, 13)).
-        """
+    def __init__(self, c1, c2, k=5):  # c1: in_channels, c2: out_channels
         super().__init__()
         c_ = c1 // 2  # hidden channels
         self.cv1 = Conv(c1, c_, 1, 1)
@@ -78,13 +69,11 @@ class SPPF(nn.Module):
         self.m = nn.MaxPool2d(kernel_size=k, stride=1, padding=k // 2)
 
     def forward(self, x):
-        """Processes input through a series of convolutions and max pooling operations for feature extraction."""
         x = self.cv1(x)
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")  # suppress torch 1.9.0 max_pool2d() warning
-            y1 = self.m(x)
-            y2 = self.m(y1)
-            return self.cv2(torch.cat((x, y1, y2, self.m(y2)), 1))
+        y1 = self.m(x)
+        y2 = self.m(y1)
+        y3 = self.m(y2)
+        return self.cv2(torch.cat([x, y1, y2, y3], 1))
 
 
 # ----------------------------
@@ -102,7 +91,7 @@ def parse_model(d, ch):
             args[j] = eval(a) if isinstance(a, str) else a
 
         n = max(round(n * d["depth_multiple"]), 1) if n > 1 else n
-        if m in {Conv, Focus, C3}:
+        if m in {Conv, Focus, C3, SPPF}:
             c1, c2 = ch[f], args[0]
             c2 = make_divisible(c2 * d["width_multiple"], 8)
             args = [c1, c2, *args[1:]]
