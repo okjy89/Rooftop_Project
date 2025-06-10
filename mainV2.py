@@ -1,4 +1,6 @@
 # main.py
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, message="pkg_resources is deprecated.*")
 
 import os
 import yaml
@@ -7,6 +9,12 @@ import torch
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
 from PIL import Image
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), "yolov5"))
+from pathlib import Path
+from yolov5.utils.yolo_backbone import load_yolo_backbone  # 새로 만들었던 외부 함수
+
 
 # ────────────────────────────────────────────────────────────────────────
 # 1. 사용자 정의 모듈 import
@@ -15,11 +23,8 @@ from PIL import Image
 # VOCDataset: dataloader.py 안에 정의됨
 from dataloader import VOCDataset
 
-# parse_model: cnn.py 안에 정의된 함수
-from cnn import parse_model
-
-# MLPTrainer: Trainer_V2.py 안에 정의된 클래스 (내부에서 KernelPredictor를 MLPNetworkV2에서 import)
-from Trainer_V4 import MLPTrainer
+# MLPTrainer: Trainer_V2.py 안에 정의된 클래스 (내부에서 KernelPredictor를 MLPNetworkV4에서 import)
+from Trainer_RGB_V1 import MLPTrainer
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -27,13 +32,17 @@ from Trainer_V4 import MLPTrainer
 # ────────────────────────────────────────────────────────────────────────
 
 # VOC2007 데이터셋 경로 (실제 경로로 바꿔주세요)
-VOC_ROOT = r"C:\Users\DELL\Desktop\VOCdevkit\VOC2007"
+VOC_ROOT = r"/home/okjy89/dataset/pascal/train/VOCdevkit/VOC2007"
 
 # cnn.yaml 파일 경로 (feature extractor 구조 정의)
-MODEL_YAML = r"C:\Users\DELL\Desktop\Project_Ver1\cnn.yaml"
+MODEL_YAML = r"cnn.yaml"
 
 # Ultralytics YOLOv8 pretrained weight 파일 경로(.pt)
 YOLO_WEIGHTS = r"C:\Users\DELL\Desktop\Yolov8\yolov8-pytorch\runs\train\exp11\weights\best.pt"
+
+# Backbone Yolo 가중치 경로; Feature Extractor
+YOLOV5_BACKBONE_WEIGHTS = r"yolov5/runs/train/yolov5n_voc2/weights/best.pt"
+YOLOV5_CFG = r"yolov5/models/yolov5n.yaml"
 
 # 이미지 리사이즈 크기 (Height, Width)
 INPUT_SIZE = (640, 640)
@@ -53,22 +62,26 @@ EPOCHS = 50
 
 def main():
     # ------------------------------------------------------------------------
-    # 3.1. Feature Extractor(backbone) 생성
+    # 3.1. Feature Extractor(backbone) 생성 (YOLOv5n 백본 사용)
     # ------------------------------------------------------------------------
-    # (a) cnn.yaml을 열어서 dict로 로드
-    with open(MODEL_YAML, "r") as f:
-        yaml_dict = yaml.safe_load(f)
+    # (a) YOLOv5n 백본 로드
+    backbone = load_yolo_backbone(
+        model_cfg=YOLOV5_CFG,
+        model_weights=YOLOV5_BACKBONE_WEIGHTS,
+        ch=3  # RGB 입력 채널
+    )
+    backbone.eval()
+    #Backbone Parameter 추적 끄기(V2에서 Updated)
+    for p in backbone.parameters():
+        p.requires_grad = False
 
-    # (b) parse_model 호출: ch=[3] → RGB 입력
-    backbone = parse_model(yaml_dict, ch=[3])
-    backbone.train()
-
-    # (c) 더미 텐서를 흘려서 feature 채널 수 추론
+    # (b) 더미 텐서로 feature 채널 수 확인
     with torch.no_grad():
         dummy = torch.randn(1, 3, INPUT_SIZE[0], INPUT_SIZE[1])
-        feat_out = backbone(dummy)  # [1, C_feat, Hf, Wf]
+        outputs  = backbone(dummy)
+        feat_out = outputs[0] if isinstance(outputs, (list, tuple)) else outputs
     feature_channels = feat_out.shape[1]
-    print(f"[Info] Backbone 생성 완료. Feature 채널 수: {feature_channels}")
+    print(f"[Info] YOLOv5 백본 로드 완료. Feature 채널 수: {feature_channels}")
 
     # ------------------------------------------------------------------------
     # 3.2. 이미지 전처리(transform) 정의
