@@ -11,3 +11,6 @@
 
 ## Main code
 - mainV2.py
+
+## Warning
+- yolov8.pt 파일이 너무 커서 업로드 불가.
